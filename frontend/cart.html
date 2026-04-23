@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+<h1>Your Cart 🛒</h1>
+
+<div id="cart"></div>
+<h3 id="total"></h3>
+
+<script>
+let cart = JSON.parse(localStorage.getItem("cart")) || [];
+
+function showCart() {
+  let total = 0;
+  document.getElementById("cart").innerHTML = "";
+
+  cart.forEach((item, i) => {
+    total += item.price;
+
+    document.getElementById("cart").innerHTML += `
+      <p>${item.name} - ₹${item.price}
+      <button onclick="remove(${i})">❌</button></p>
+    `;
+  });
+
+  document.getElementById("total").innerText = "Total: ₹" + total;
+}
+
+function remove(i) {
+  cart.splice(i, 1);
+  localStorage.setItem("cart", JSON.stringify(cart));
+  showCart();
+}
+<button onclick="payNow()">💳 Pay Now</button>
+async function payNow() {
+  const cart = JSON.parse(localStorage.getItem("cart")) || [];
+
+  let total = cart.reduce((sum, item) => sum + item.price, 0);
+
+  const res = await fetch("http://localhost:5000/api/payment/create-order", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ amount: total })
+  });
+
+  const order = await res.json();
+
+  const options = {
+    key: "YOUR_KEY_ID",
+    amount: order.amount,
+    currency: "INR",
+    name: "Sanique Cosmetics",
+    description: "Purchase Payment",
+    order_id: order.id,
+    handler: function () {
+      alert("Payment Successful 🎉");
+      localStorage.removeItem("cart");
+      location.reload();
+    }
+  };
+
+  const rzp = new Razorpay(options);
+  rzp.open();
+}
+<button onclick="window.location.href='checkout.html'">
+Proceed to Checkout 🧾
+</button>
+showCart();
+</script>
+
+</body>
+</html>

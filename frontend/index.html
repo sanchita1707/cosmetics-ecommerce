@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Sanique Cosmetics 💄</title>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #fff0f5;
+      text-align: center;
+      margin: 0;
+      padding: 20px;
+    }
+
+    h1 {
+      color: #e91e63;
+    }
+
+    #userSection {
+      margin-bottom: 15px;
+    }
+
+    .products {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 20px;
+      margin-top: 20px;
+    }
+
+    .card {
+      background: white;
+      padding: 15px;
+      border-radius: 12px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.15);
+      transition: 0.3s;
+    }
+
+    .card:hover {
+      transform: scale(1.03);
+    }
+
+    .card img {
+      width: 100%;
+      height: 180px;
+      object-fit: cover;
+      border-radius: 10px;
+    }
+
+    button {
+      background: #e91e63;
+      color: white;
+      border: none;
+      padding: 10px 15px;
+      border-radius: 6px;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+
+    button:hover {
+      opacity: 0.9;
+    }
+
+    #cartItems p {
+      margin: 8px 0;
+    }
+
+    .cart-box {
+      background: white;
+      padding: 10px;
+      margin-top: 20px;
+      border-radius: 10px;
+      display: inline-block;
+      min-width: 300px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- USER SECTION -->
+  <div id="userSection"></div>
+
+  <h1>Sanique Cosmetics 💄</h1>
+
+  <!-- PRODUCTS -->
+  <div class="products" id="productList"></div>
+
+  <!-- CART -->
+  <h2>🛒 Cart</h2>
+  <div class="cart-box">
+    <div id="cartItems"></div>
+    <h3 id="totalPrice"></h3>
+  </div>
+
+  <script>
+    // ✅ Load cart from localStorage
+    let cart = JSON.parse(localStorage.getItem("cart")) || [];
+
+    // ---------------- USER ----------------
+    function showUser() {
+      const user = JSON.parse(localStorage.getItem("user"));
+      const userSection = document.getElementById("userSection");
+
+      if (user) {
+        userSection.innerHTML = `
+          <p>Welcome ${user.name} 🎉</p>
+          <button onclick="logout()">Logout</button>
+        `;
+      } else {
+        userSection.innerHTML = `<a href="login.html">Login</a>`;
+      }
+    }
+
+    function logout() {
+      localStorage.removeItem("token");
+      localStorage.removeItem("user");
+      location.reload();
+    }
+
+    // ---------------- PRODUCTS ----------------
+    async function getProducts() {
+      try {
+        const res = await fetch("http://localhost:5000/api/products");
+        const data = await res.json();
+
+        const container = document.getElementById("productList");
+        container.innerHTML = "";
+
+        data.forEach(product => {
+          container.innerHTML += `
+            <div class="card">
+              <img src="${product.image}" 
+                   onerror="this.src='https://via.placeholder.com/200'">
+
+              <h3>${product.name}</h3>
+              <p>${product.description}</p>
+              <p><b>₹${product.price}</b></p>
+
+              <button onclick="addToCart('${product._id}', '${product.name}', ${product.price})">
+                Add to Cart
+              </button>
+            </div>
+          `;
+        });
+
+      } catch (err) {
+        console.log("Error loading products:", err);
+      }
+    }
+
+    // ---------------- CART ----------------
+    function addToCart(id, name, price) {
+
+      // 🔐 login check
+      const token = localStorage.getItem("token");
+      if (!token) {
+        alert("Please login first!");
+        return;
+      }
+
+      cart.push({ id, name, price });
+      saveCart();
+      displayCart();
+    }
+
+    function displayCart() {
+      const cartDiv = document.getElementById("cartItems");
+      const totalDiv = document.getElementById("totalPrice");
+
+      cartDiv.innerHTML = "";
+      let total = 0;
+
+      cart.forEach((item, index) => {
+        total += item.price;
+
+        cartDiv.innerHTML += `
+          <p>
+            ${item.name} - ₹${item.price}
+            <button onclick="removeItem(${index})">❌</button>
+          </p>
+        `;
+      });
+
+      totalDiv.innerText = "Total: ₹" + total;
+
+      saveCart();
+    }
+
+    function removeItem(index) {
+      cart.splice(index, 1);
+      saveCart();
+      displayCart();
+    }
+
+    function saveCart() {
+      localStorage.setItem("cart", JSON.stringify(cart));
+    }
+
+    // ---------------- INIT ----------------
+    showUser();
+    getProducts();
+    displayCart();
+  </script>
+
+</body>
+</html>

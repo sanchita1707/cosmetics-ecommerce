@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Admin Dashboard</title>
+
+  <style>
+    body { font-family: Arial; background:#fff0f5; padding:20px; }
+    h1 { color:#e91e63; }
+
+    .card {
+      background:white;
+      padding:15px;
+      margin:10px;
+      border-radius:10px;
+      box-shadow:0 0 10px #ccc;
+    }
+
+    button {
+      background:#e91e63;
+      color:white;
+      border:none;
+      padding:8px 12px;
+      cursor:pointer;
+    }
+  </style>
+</head>
+
+<body>
+
+<h1>👩‍💼 Admin Dashboard</h1>
+
+<!-- STATS -->
+<div class="card">
+  <h2>📊 Stats</h2>
+  <p id="totalProducts"></p>
+  <p id="totalOrders"></p>
+</div>
+
+<button onclick="loadOrders()">Load Orders</button>
+<button onclick="loadProducts()">Load Products</button>
+
+<h2>📦 Orders</h2>
+<div id="orders"></div>
+
+<h2>💄 Products</h2>
+<div id="products"></div>
+
+<script src="admin.js"></script>
+<div id="stats"></div>
+
+<button onclick="loadStats()">Load Analytics 📊</button>
+</body>
+</html>
