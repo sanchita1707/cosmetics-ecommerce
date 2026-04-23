@@ -4,9 +4,9 @@
   "description": "",
   "main": "server.js",
   "scripts": {
-  "start": "node server.js",
-  "test": "echo \"Error\""
-}
+    "start": "node server.js",
+    "test": "echo \"Error\""
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",
