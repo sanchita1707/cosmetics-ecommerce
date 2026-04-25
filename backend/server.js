@@ -27,12 +27,19 @@ app.get("/", (req, res) => {
 // MONGODB CONNECTION
 mongoose.connect("mongodb+srv://sanchita:Ut_AxrQNFJN9HRe@cluster0.x3dwapj.mongodb.net/sanique")
   .then(() => {
-    console.log("MongoDB Connected ✔");
+    console.log("✅ MongoDB Connected SUCCESSFULLY");
   })
-  .catch(err => {
-    console.error("Mongo Error ❌", err);
+  .catch((err) => {
+    console.log("❌ MongoDB Connection FAILED");
+    console.log(err);
   });
+mongoose.connection.on("connected", () => {
+  console.log("🔥 Mongoose connected event fired");
+});
 
+mongoose.connection.on("error", (err) => {
+  console.log("🔥 Mongoose error:", err);
+});
 // PORT
 const PORT = process.env.PORT || 5000;
 
