@@ -9,8 +9,10 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// DEBUG ENV (IMPORTANT)
-console.log("MONGO_URI:", process.env.MONGO_URI);
+// ROOT ROUTE (to avoid 502 error)
+app.get("/", (req, res) => {
+  res.send("API is running 🚀");
+});
 
 // ROUTES
 app.use("/api/auth", require("./routes/authRoutes"));
@@ -19,31 +21,26 @@ app.use("/api/orders", require("./routes/orderRoutes"));
 app.use("/api/payment", require("./routes/paymentRoutes"));
 app.use("/api/admin", require("./routes/adminRoutes"));
 
-// ROOT ROUTE (to avoid 502 / blank page)
-app.get("/", (req, res) => {
-  res.send("API is running 🚀");
-});
+// 🔥 MONGODB CONNECTION (FINAL)
+const connectDB = async () => {
+  try {
+    await mongoose.connect(process.env.MONGO_URI, {
+      dbName: "sanique",
+    });
 
-// MONGODB CONNECTION
-mongoose.connect("mongodb+srv://sanchita:Ut_AxrQNFJN9HRe@cluster0.x3dwapj.mongodb.net/sanique")
-  .then(() => {
-    console.log("✅ MongoDB Connected SUCCESSFULLY");
-  })
-  .catch((err) => {
-    console.log("❌ MongoDB Connection FAILED");
-    console.log(err);
-  });
-mongoose.connection.on("connected", () => {
-  console.log("🔥 Mongoose connected event fired");
-});
+    console.log("✅ MongoDB Connected Successfully");
+  } catch (error) {
+    console.error("❌ MongoDB Connection Failed:");
+    console.error(error.message);
+    process.exit(1); // stop server if DB fails
+  }
+};
 
-mongoose.connection.on("error", (err) => {
-  console.log("🔥 Mongoose error:", err);
-});
-// PORT
+// START SERVER ONLY AFTER DB CONNECTS
 const PORT = process.env.PORT || 5000;
 
-// START SERVER (ONLY ONCE)
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT} 🚀`);
+connectDB().then(() => {
+  app.listen(PORT, () => {
+    console.log(`🚀 Server running on port ${PORT}`);
+  });
 });
