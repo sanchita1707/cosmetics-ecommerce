@@ -25,15 +25,9 @@ app.get("/", (req, res) => {
 });
 
 // MONGODB CONNECTION
-mongoose.connect(process.env.MONGO_URI, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-})
-.then(() => console.log("MongoDB Connected ✔"))
-.catch(err => {
-  console.error("Mongo Error ❌", err);
-  process.exit(1); // stop app if DB fails
-});
+mongoose.connect("mongodb+srv://sanchita:Ut_AxrQNFJN9HRe@cluster0.x3dwapj.mongodb.net/sanique")
+  .then(() => console.log("MongoDB Connected ✔"))
+  .catch(err => console.log("Mongo Error ❌", err));
 
 // PORT
 const PORT = process.env.PORT || 5000;
