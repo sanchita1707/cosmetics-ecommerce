@@ -1,5 +1,4 @@
 const mongoose = require("mongoose");
-const Order = require("./models/Order");
 const orderSchema = new mongoose.Schema({
   items: Array,
   totalAmount: Number,
