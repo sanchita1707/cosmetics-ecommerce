@@ -26,8 +26,12 @@ app.get("/", (req, res) => {
 
 // MONGODB CONNECTION
 mongoose.connect("mongodb+srv://sanchita:Ut_AxrQNFJN9HRe@cluster0.x3dwapj.mongodb.net/sanique")
-  .then(() => console.log("MongoDB Connected ✔"))
-  .catch(err => console.log("Mongo Error ❌", err));
+  .then(() => {
+    console.log("MongoDB Connected ✔");
+  })
+  .catch(err => {
+    console.error("Mongo Error ❌", err);
+  });
 
 // PORT
 const PORT = process.env.PORT || 5000;
